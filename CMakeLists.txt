@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.16..3.23)
 project(ming
     VERSION 0.1.0
     LANGUAGES CXX
-    DESCRIPTION "Additional modern C++ container library"
+    DESCRIPTION "Slightly advanced containers for C++"
     HOMEPAGE_URL "https://github.com/poyea/ming")
 
 if(MSVC)

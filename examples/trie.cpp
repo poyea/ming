@@ -1,5 +1,6 @@
-#include <iostream>
 #include <ming/trie.hpp>
+
+#include <iostream>
 
 int main() {
   ming::Trie t;
