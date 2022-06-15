@@ -1,2 +1,2 @@
 # ming
-Additional containers library for modern C++
+Additional modern C++ container library
