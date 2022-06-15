@@ -1,6 +1,7 @@
 #pragma once
+
 #include <memory>
-#include <string>
+#include <string_view>
 #include <unordered_map>
 
 namespace ming {
@@ -34,6 +35,7 @@ class Trie {
 
 public:
   Trie() : m_root(std::make_unique<TrieNode>()) {}
+
   ~Trie() {}
 
   Trie(const Trie &other) : Trie() {
@@ -57,7 +59,7 @@ public:
     return *this;
   }
 
-  void insert(std::string word) {
+  void insert(std::string_view word) {
     auto *root = m_root.get();
     for (auto &c : word) {
       auto it = root->children.find(c);
@@ -69,7 +71,7 @@ public:
     root->end_of_word = true;
   }
 
-  bool search(std::string word) {
+  bool search(std::string_view word) {
     auto *root = m_root.get();
     for (auto &c : word) {
       auto it = root->children.find(c);
@@ -81,7 +83,7 @@ public:
     return root->end_of_word;
   }
 
-  bool starts_with(std::string prefix) {
+  bool starts_with(std::string_view prefix) {
     auto *root = m_root.get();
     for (auto &c : prefix) {
       auto it = root->children.find(c);
