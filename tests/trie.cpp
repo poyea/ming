@@ -34,4 +34,20 @@ TEST_F(Trie_TEST, TriePrefix) {
   EXPECT_TRUE(not trie.starts_with("po"));
 }
 
+TEST_F(Trie_TEST, TrieClone) {
+  trie.insert("word");
+  auto t_clone = trie;
+  EXPECT_TRUE(trie.starts_with("wo"));
+  EXPECT_TRUE(not trie.starts_with("po"));
+  EXPECT_TRUE(t_clone.starts_with("wo"));
+  EXPECT_TRUE(not t_clone.starts_with("po"));
+}
+
+TEST_F(Trie_TEST, TrieMoved) {
+  trie.insert("word");
+  auto t_moved = std::move(trie);
+  EXPECT_TRUE(t_moved.starts_with("wo"));
+  EXPECT_TRUE(not t_moved.starts_with("po"));
+}
+
 } // namespace trie_test

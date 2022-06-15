@@ -8,9 +8,9 @@ namespace ming {
 class Trie {
   class TrieNode {
   public:
-    TrieNode() : is_end(false){};
+    TrieNode() : end_of_word(false){};
 
-    bool is_end;
+    bool end_of_word;
     std::unordered_map<char, std::unique_ptr<TrieNode>> children;
   };
 
@@ -19,13 +19,13 @@ class Trie {
       auto it = to_node->children.find(c);
       if (it == to_node->children.end()) {
         to_node->children[c] = std::make_unique<TrieNode>();
-        if (child_node->is_end) {
-          to_node->is_end = true;
+        if (child_node->end_of_word) {
+          to_node->end_of_word = true;
         }
         clone(child_node, to_node->children[c]);
       } else {
-        if (child_node->is_end) {
-          it->second->is_end = true;
+        if (child_node->end_of_word) {
+          it->second->end_of_word = true;
         }
         clone(child_node, it->second);
       }
@@ -66,7 +66,7 @@ public:
       }
       root = root->children[c].get();
     }
-    root->is_end = true;
+    root->end_of_word = true;
   }
 
   bool search(std::string word) {
@@ -78,7 +78,7 @@ public:
       }
       root = it->second.get();
     }
-    return root->is_end;
+    return root->end_of_word;
   }
 
   bool starts_with(std::string prefix) {
