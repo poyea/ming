@@ -89,7 +89,7 @@ public:
     root->end_of_word = true;
   }
 
-  bool search(std::string_view word) {
+  bool is_word(std::string_view word) {
     auto *root = m_root.get();
     for (auto &c : word) {
       auto it = root->children.find(c);

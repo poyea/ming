@@ -13,10 +13,10 @@ int main() {
   t.insert("stuff");
 
   std::cout << std::boolalpha;
-  std::cout << t.search("stuff") << '\n';
-  std::cout << t.search("boy") << '\n';
-  std::cout << t.search("playground") << '\n';
-  std::cout << t.search("spaceship") << '\n';
+  std::cout << t.is_word("stuff") << '\n';
+  std::cout << t.is_word("boy") << '\n';
+  std::cout << t.is_word("playground") << '\n';
+  std::cout << t.is_word("spaceship") << '\n';
 
   std::cout << t.starts_with("stu") << '\n';
   std::cout << t.starts_with("ra") << '\n';

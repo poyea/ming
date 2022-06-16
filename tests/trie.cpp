@@ -23,9 +23,9 @@ protected:
 
 TEST_F(Trie_TEST, TrieSearch) {
   trie.insert("word");
-  EXPECT_TRUE(trie.search("word"));
-  EXPECT_TRUE(not trie.search("word_not_exist"));
-  EXPECT_TRUE(not trie.search("not_exist"));
+  EXPECT_TRUE(trie.is_word("word"));
+  EXPECT_TRUE(not trie.is_word("word_not_exist"));
+  EXPECT_TRUE(not trie.is_word("not_exist"));
 }
 
 TEST_F(Trie_TEST, TriePrefix) {
@@ -46,8 +46,11 @@ TEST_F(Trie_TEST, TrieClone) {
 TEST_F(Trie_TEST, TrieMoved) {
   trie.insert("word");
   auto t_moved = std::move(trie);
+  auto t_copied(t_moved);
   EXPECT_TRUE(t_moved.starts_with("wo"));
   EXPECT_TRUE(not t_moved.starts_with("po"));
+  EXPECT_TRUE(t_copied.starts_with("wo"));
+  EXPECT_TRUE(not t_copied.starts_with("po"));
 }
 
 } // namespace trie_test
