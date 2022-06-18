@@ -54,7 +54,7 @@ class Trie {
 public:
   Trie() : m_root(std::make_unique<TrieNode>()) {}
 
-  ~Trie() {}
+  ~Trie() = default;
 
   Trie(const Trie &other) : Trie() {
     for (auto &[c, child_node] : other.m_root->children) {
@@ -70,7 +70,12 @@ public:
 
   Trie(Trie &&other) noexcept : m_root(std::exchange(other.m_root, nullptr)) {}
 
-  Trie &operator=(const Trie &other) { return *this = Trie(other); }
+  Trie &operator=(const Trie &other) {
+    if (this == &other) {
+      return *this;
+    }
+    return *this = Trie(other);
+  }
 
   Trie &operator=(Trie &&other) noexcept {
     std::swap(m_root, other.m_root);
