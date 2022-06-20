@@ -33,7 +33,7 @@ class Trie {
     std::unordered_map<char, std::unique_ptr<TrieNode>> children;
   };
 
-  void clone(std::unique_ptr<TrieNode> &from_node, std::unique_ptr<TrieNode> &to_node) {
+  void clone(const std::unique_ptr<TrieNode> &from_node, std::unique_ptr<TrieNode> &to_node) {
     for (auto &[c, child_node] : from_node->children) {
       auto it = to_node->children.find(c);
       if (it == to_node->children.end()) {
@@ -57,15 +57,7 @@ public:
   ~Trie() = default;
 
   Trie(const Trie &other) : Trie() {
-    for (auto &[c, child_node] : other.m_root->children) {
-      auto it = m_root->children.find(c);
-      if (it == m_root->children.end()) {
-        m_root->children[c] = std::make_unique<TrieNode>();
-        clone(child_node, m_root->children[c]);
-      } else {
-        clone(child_node, it->second);
-      }
-    }
+    clone(other.m_root, m_root);
   }
 
   Trie(Trie &&other) noexcept : m_root(std::exchange(other.m_root, nullptr)) {}
