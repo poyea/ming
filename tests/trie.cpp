@@ -18,7 +18,7 @@ protected:
     // pre-destruction
   }
 
-  ming::Trie trie;
+  ming::Trie<char> trie;
 };
 
 TEST_F(Trie_TEST, TrieSearch) {

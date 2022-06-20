@@ -24,16 +24,18 @@
 
 namespace ming {
 
+template <typename Key = char>
 class Trie {
   class TrieNode {
   public:
     TrieNode() : end_of_word(false){};
 
     bool end_of_word;
-    std::unordered_map<char, std::unique_ptr<TrieNode>> children;
+    std::unordered_map<Key, std::unique_ptr<TrieNode>> children;
   };
 
-  void clone(const std::unique_ptr<TrieNode> &from_node, std::unique_ptr<TrieNode> &to_node) {
+  void clone(const std::unique_ptr<TrieNode> &from_node,
+             std::unique_ptr<TrieNode> &to_node) {
     for (auto &[c, child_node] : from_node->children) {
       auto it = to_node->children.find(c);
       if (it == to_node->children.end()) {
@@ -56,9 +58,7 @@ public:
 
   ~Trie() = default;
 
-  Trie(const Trie &other) : Trie() {
-    clone(other.m_root, m_root);
-  }
+  Trie(const Trie &other) : Trie() { clone(other.m_root, m_root); }
 
   Trie(Trie &&other) noexcept : m_root(std::exchange(other.m_root, nullptr)) {}
 
