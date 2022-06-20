@@ -76,7 +76,7 @@ public:
 
   void insert(std::string_view word) {
     auto *root = m_root.get();
-    for (auto &c : word) {
+    for (auto const &c : word) {
       auto it = root->children.find(c);
       if (it == root->children.end()) {
         root->children[c] = std::make_unique<TrieNode>();
@@ -88,7 +88,7 @@ public:
 
   bool is_word(std::string_view word) {
     auto *root = m_root.get();
-    for (auto &c : word) {
+    for (auto const &c : word) {
       auto it = root->children.find(c);
       if (it == root->children.end()) {
         return false;
@@ -100,7 +100,7 @@ public:
 
   bool starts_with(std::string_view prefix) {
     auto *root = m_root.get();
-    for (auto &c : prefix) {
+    for (auto const &c : prefix) {
       auto it = root->children.find(c);
       if (it == root->children.end()) {
         return false;
