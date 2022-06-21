@@ -50,15 +50,15 @@ class Trie {
   }
 
 public:
-  Trie() : m_root(std::make_unique<TrieNode>()) {}
+  Trie() noexcept : m_root(std::make_unique<TrieNode>()) {}
 
-  ~Trie() = default;
+  ~Trie() noexcept = default;
 
-  Trie(const Trie &other) : Trie() { clone(other.m_root, m_root); }
+  Trie(const Trie &other) noexcept : Trie() { clone(other.m_root, m_root); }
 
   Trie(Trie &&other) noexcept : m_root(std::exchange(other.m_root, nullptr)) {}
 
-  Trie &operator=(const Trie &other) {
+  Trie &operator=(const Trie &other) noexcept {
     if (this == &other) {
       return *this;
     }
@@ -70,7 +70,7 @@ public:
     return *this;
   }
 
-  void insert(std::string_view word) {
+  void insert(std::string_view word) noexcept {
     auto *root = m_root.get();
     for (auto const &c : word) {
       auto it = root->children.find(c);
@@ -82,7 +82,7 @@ public:
     root->end_of_word = true;
   }
 
-  bool is_word(std::string_view word) {
+  bool is_word(std::string_view word) const noexcept{
     auto *root = m_root.get();
     for (auto const &c : word) {
       auto it = root->children.find(c);
@@ -94,7 +94,7 @@ public:
     return root->end_of_word;
   }
 
-  bool starts_with(std::string_view prefix) {
+  bool starts_with(std::string_view prefix) const noexcept{
     auto *root = m_root.get();
     for (auto const &c : prefix) {
       auto it = root->children.find(c);
