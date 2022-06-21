@@ -40,14 +40,10 @@ class Trie {
       auto it = to_node->children.find(c);
       if (it == to_node->children.end()) {
         to_node->children[c] = std::make_unique<TrieNode>();
-        if (child_node->end_of_word) {
-          to_node->end_of_word = true;
-        }
+        to_node->end_of_word = child_node->end_of_word;
         clone(child_node, to_node->children[c]);
       } else {
-        if (child_node->end_of_word) {
-          it->second->end_of_word = true;
-        }
+        to_node->end_of_word = child_node->end_of_word;
         clone(child_node, it->second);
       }
     }
