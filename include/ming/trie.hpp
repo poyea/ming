@@ -82,7 +82,7 @@ public:
     root->end_of_word = true;
   }
 
-  bool is_word(std::string_view word) const noexcept {
+  [[nodiscard]] bool is_word(std::string_view word) const noexcept {
     auto *root = m_root.get();
     for (auto const &c : word) {
       auto it = root->children.find(c);
@@ -94,7 +94,7 @@ public:
     return root->end_of_word;
   }
 
-  bool starts_with(std::string_view prefix) const noexcept {
+  [[nodiscard]] bool starts_with(std::string_view prefix) const noexcept {
     auto *root = m_root.get();
     for (auto const &c : prefix) {
       auto it = root->children.find(c);
