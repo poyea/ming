@@ -3,13 +3,7 @@
 #include <iostream>
 
 int main() {
-  ming::Trie t;
-  t.insert("race");
-  t.insert("racing");
-  t.insert("racecar");
-  t.insert("rapid");
-  t.insert("playground");
-  t.insert("plump");
+  ming::Trie t{"race", "racing", "racecar", "rapid", "playground", "plump"};
   t.insert("stuff");
 
   std::cout << std::boolalpha;

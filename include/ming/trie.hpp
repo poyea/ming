@@ -52,6 +52,13 @@ class Trie {
 public:
   Trie() noexcept : m_root(std::make_unique<TrieNode>()) {}
 
+  Trie(std::initializer_list<std::string_view> list)
+      : m_root(std::make_unique<TrieNode>()) {
+    for (auto const &str : list) {
+      insert(str);
+    }
+  }
+
   ~Trie() noexcept = default;
 
   Trie(const Trie &other) noexcept : Trie() { clone(other.m_root, m_root); }
