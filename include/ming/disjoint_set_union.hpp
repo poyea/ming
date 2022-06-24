@@ -76,12 +76,12 @@ public:
   const node_ptr &get_parent() const { return m_parent; }
   node_ptr &get_parent() { return m_parent; }
 
-  int get_rank() const noexcept { return m_rank; }
+  std::uint64_t get_rank() const noexcept { return m_rank; }
 
 private:
   object_ptr m_object;
   node_ptr m_parent;
-  int m_rank;
+  std::uint64_t m_rank;
 };
 
 template <typename T>
