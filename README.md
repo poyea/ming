@@ -1,2 +1,2 @@
 # ming
-Slightly advanced containers for C++
+C++ containers library

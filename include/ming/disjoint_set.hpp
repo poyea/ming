@@ -1,5 +1,5 @@
 //
-// ming   Slightly advanced containers for C++
+// ming   C++ containers library
 // Copyright (C) 2022  John Law
 //
 // ming is free software: you can redistribute it and/or modify
@@ -23,26 +23,26 @@
 namespace ming {
 
 template <typename T>
-class DisjointSetUnion;
+class DisjointSet;
 template <typename T>
-class DisjointSetUnionNode;
+class DisjointSetNode;
 
 template <typename T>
-class DisjointSetUnionNode {
-  friend DisjointSetUnion<T>;
+class DisjointSetNode {
+  friend DisjointSet<T>;
 
-  using node_type = DisjointSetUnionNode<T>;
+  using node_type = DisjointSetNode<T>;
   using node_ptr = std::shared_ptr<node_type>;
 
   using object_ptr = std::unique_ptr<T>;
 
 public:
-  DisjointSetUnionNode(object_ptr object, node_ptr parent, int rank)
+  DisjointSetNode(object_ptr object, node_ptr parent, int rank)
       : m_object(std::move(object)), m_parent(std::move(parent)), m_rank(rank) {}
 
-  ~DisjointSetUnionNode() = default;
+  ~DisjointSetNode() = default;
 
-  DisjointSetUnionNode(const DisjointSetUnionNode &other) {
+  DisjointSetNode(const DisjointSetNode &other) {
     m_object = std::make_unique<T>(*other.m_object);
     if (other.m_parent != nullptr) {
       m_parent = std::make_shared<node_type>(*other.m_parent);
@@ -52,18 +52,18 @@ public:
     m_rank = other.m_rank;
   }
 
-  DisjointSetUnionNode(DisjointSetUnionNode &&other) noexcept
+  DisjointSetNode(DisjointSetNode &&other) noexcept
       : m_object(std::move(other.m_object)),
         m_parent(std::exchange(other.m_parent, nullptr)), m_rank(other.m_rank) {}
 
-  DisjointSetUnionNode &operator=(const DisjointSetUnionNode &other) {
+  DisjointSetNode &operator=(const DisjointSetNode &other) {
     if (this == &other) {
       return *this;
     }
-    return *this = DisjointSetUnionNode(other);
+    return *this = DisjointSetNode(other);
   }
 
-  DisjointSetUnionNode &operator=(DisjointSetUnionNode &&other) noexcept {
+  DisjointSetNode &operator=(DisjointSetNode &&other) noexcept {
     std::swap(m_object, other.m_object);
     std::swap(m_parent, other.m_parent);
     std::swap(m_rank, other.m_rank);
@@ -85,12 +85,12 @@ private:
 };
 
 template <typename T>
-class DisjointSetUnion {
+class DisjointSet {
 public:
-  using node_type = DisjointSetUnionNode<T>::node_type;
-  using node_ptr = DisjointSetUnionNode<T>::node_ptr;
+  using node_type = DisjointSetNode<T>::node_type;
+  using node_ptr = DisjointSetNode<T>::node_ptr;
 
-  using object_ptr = DisjointSetUnionNode<T>::object_ptr;
+  using object_ptr = DisjointSetNode<T>::object_ptr;
 
   void path_compress(node_ptr &node, node_ptr root) {
     for (node_ptr tmp = node->m_parent; tmp && tmp != root;) {
@@ -101,9 +101,9 @@ public:
   }
 
 public:
-  DisjointSetUnion() = default;
+  DisjointSet() = default;
 
-  ~DisjointSetUnion() = default;
+  ~DisjointSet() = default;
 
   template <typename... Args>
   [[maybe_unused]] node_ptr insert(Args &&... args) {

@@ -1,5 +1,5 @@
 //
-// ming   Slightly advanced containers for C++
+// ming   C++ containers library
 // Copyright (C) 2022  John Law
 //
 // ming is free software: you can redistribute it and/or modify
