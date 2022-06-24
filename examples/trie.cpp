@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-int main() {
+int main(void) {
   ming::Trie t{"race", "racing", "racecar", "rapid", "playground", "plump"};
   t.insert("stuff");
 
