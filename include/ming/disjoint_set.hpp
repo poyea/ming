@@ -87,10 +87,10 @@ private:
 template <typename T>
 class DisjointSet {
 public:
-  using node_type = DisjointSetNode<T>::node_type;
-  using node_ptr = DisjointSetNode<T>::node_ptr;
+  using node_type = typename DisjointSetNode<T>::node_type;
+  using node_ptr = typename DisjointSetNode<T>::node_ptr;
 
-  using object_ptr = DisjointSetNode<T>::object_ptr;
+  using object_ptr = typename DisjointSetNode<T>::object_ptr;
 
   void path_compress(node_ptr &node, node_ptr root) {
     for (node_ptr tmp = node->m_parent; tmp && tmp != root;) {
