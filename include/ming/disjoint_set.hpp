@@ -18,6 +18,9 @@
 
 #pragma once
 
+#include <exception>
+#include <iostream>
+#include <iterator>
 #include <memory>
 
 namespace ming {
@@ -87,6 +90,8 @@ private:
 template <typename T>
 class DisjointSet {
 public:
+  class Iterator;
+
   using node_type = typename DisjointSetNode<T>::node_type;
   using node_ptr = typename DisjointSetNode<T>::node_ptr;
 
@@ -101,47 +106,86 @@ public:
   }
 
 public:
+  class Iterator {
+  public:
+    using iterator_category = std::forward_iterator_tag;
+    using difference_type = std::ptrdiff_t;
+    using value_type = node_ptr;
+    using pointer = node_ptr *;
+    using reference = node_ptr &;
+
+  public:
+    Iterator() = default;
+    Iterator(pointer ptr) : m_pointer(ptr) {}
+    Iterator(value_type val) : m_node(std::move(val)), m_pointer(&m_node) {}
+
+    pointer operator->() { return m_pointer; }
+
+    reference operator*() const { return *m_pointer; }
+
+    Iterator &operator++() { throw std::logic_error("Not Implemented"); }
+
+    Iterator operator++(int) {
+      Iterator tmp{*this};
+      ++(*this);
+      return tmp;
+    }
+
+    friend bool operator==(const Iterator &a, const Iterator &b) {
+      return a.m_pointer == b.m_pointer;
+    };
+
+    friend bool operator!=(const Iterator &a, const Iterator &b) {
+      return a.m_pointer != b.m_pointer;
+    };
+
+  private:
+    value_type m_node;
+    pointer m_pointer;
+  };
+
+public:
   DisjointSet() = default;
 
   ~DisjointSet() = default;
 
   template <typename... Args>
-  [[maybe_unused]] node_ptr insert(Args &&... args) {
+  [[maybe_unused]] Iterator insert(Args &&... args) {
     auto new_node = std::make_shared<node_type>(
         std::make_unique<T>(std::forward<Args>(args)...), nullptr, 0);
-    return new_node;
+    return Iterator(std::move(new_node));
   }
 
-  node_ptr find(node_ptr object) {
-    node_ptr *root = &object;
-    while ((*root)->m_parent != nullptr) {
-      root = &((*root)->m_parent);
+  Iterator find(Iterator object) {
+    auto object_ptr = *object;
+    while (object_ptr->m_parent != nullptr) {
+      object_ptr = object_ptr->m_parent;
     }
-    return *root;
+    return Iterator(object_ptr);
   }
 
-  [[nodiscard]] bool are_same_set(node_ptr node_a, node_ptr node_b) {
-    node_ptr parent_a = find(node_a), parent_b = find(node_b);
-    node_ptr *const root_a = &parent_a, *const root_b = &parent_b;
-    path_compress(node_a, *root_a);
-    path_compress(node_b, *root_b);
-    return *root_a == *root_b;
+  [[nodiscard]] bool are_same_set(Iterator node_a, Iterator node_b) {
+    Iterator parent_a = find(node_a), parent_b = find(node_b);
+    Iterator *const root_a = &parent_a, *const root_b = &parent_b;
+    path_compress(*node_a, **root_a);
+    path_compress(*node_b, **root_b);
+    return **root_a == **root_b;
   }
 
-  void merge(node_ptr node_a, node_ptr node_b) {
-    node_ptr parent_a = find(node_a), parent_b = find(node_b);
-    node_ptr *const root_a = &parent_a, *const root_b = &parent_b;
+  void merge(Iterator node_a, Iterator node_b) {
+    Iterator parent_a = find(node_a), parent_b = find(node_b);
+    Iterator *const root_a = &parent_a, *const root_b = &parent_b;
     node_ptr *new_root;
-    if ((*root_a)->m_rank >= (*root_b)->m_rank) {
-      new_root = root_a;
-      (*root_b)->m_parent = *new_root;
-      (*new_root)->m_rank += ((*root_a)->m_rank == (*root_b)->m_rank);
+    if ((*root_a)->get()->m_rank >= (*root_b)->get()->m_rank) {
+      new_root = &(**root_a);
+      (*root_b)->get()->m_parent = *new_root;
+      (**new_root).m_rank += ((*root_a)->get()->m_rank == (*root_b)->get()->m_rank);
     } else {
-      new_root = root_b;
-      (*root_a)->m_parent = *new_root;
+      new_root = &(**root_b);
+      (*root_a)->get()->m_parent = *new_root;
     }
-    path_compress(node_a, *new_root);
-    path_compress(node_b, *new_root);
+    path_compress(*node_a, *new_root);
+    path_compress(*node_b, *new_root);
   }
 };
 

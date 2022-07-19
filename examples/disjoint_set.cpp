@@ -13,16 +13,28 @@ struct Object {
 
 int main(void) {
   ming::DisjointSet<Object> dsu;
-  std::vector<ming::DisjointSet<Object>::node_ptr> vec{
-      dsu.insert(1), dsu.insert(2, 1.5, 2.5), dsu.insert(3, 1.5, 2.5)};
+
+  std::vector<ming::DisjointSet<Object>::Iterator> vec;
+
+  auto it1 = dsu.insert(1), it2 = dsu.insert(2, 1.5, 2.5),
+       it3 = dsu.insert(3, 1.5, 2.5);
+  vec.push_back(it1);
+  vec.push_back(it2);
+  vec.push_back(it3);
+
+  std::cout << (vec[0])->get()->get_object().data << '\n';
+  std::cout << (vec[1])->get()->get_object().data << '\n';
+  std::cout << (vec[2])->get()->get_object().data << '\n';
 
   dsu.merge(vec[0], vec[1]);
-  vec.emplace_back(dsu.insert(4, 1.5, 2.5));
+
+  auto it4 = dsu.insert(4, 1.5, 2.5);
+  vec.push_back(it4);
   dsu.merge(vec[2], vec[3]);
 
   for (std::size_t s = 0; s < vec.size(); ++s) {
-    std::cout << "Parent of element " << s << " is "
-              << dsu.find(vec[s])->get_object().data << '\n';
+    std::cout << "Parent of element " << (s + 1) << " is "
+              << (dsu.find(vec[s]))->get()->get_object().data << '\n';
   }
 
   for (std::size_t s = 0; s < vec.size(); ++s) {
@@ -32,4 +44,6 @@ int main(void) {
                 << "in same set\n";
     }
   }
+
+  return 0;
 }
