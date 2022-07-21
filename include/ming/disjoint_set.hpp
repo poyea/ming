@@ -27,8 +27,6 @@ namespace ming {
 
 template <typename T>
 class DisjointSet;
-template <typename T>
-class DisjointSetNode;
 
 template <typename T>
 class DisjointSetNode {
