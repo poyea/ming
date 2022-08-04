@@ -70,17 +70,17 @@ TEST_F(DisjointSet_TEST, DisjointSetNode) {
   EXPECT_TRUE(it3_parent == it_copy_parent);
   EXPECT_TRUE(it2_parent == it3_parent);
 
-  //   auto it_moved = std::move(it2);
-  //   auto &it_moved_parent = it_moved->get()->get_parent().get()->get_object();
-  //   EXPECT_TRUE(it_moved_parent == it_copy_parent);
-  //   EXPECT_TRUE(it3_parent == it_copy_parent);
-  //   EXPECT_TRUE(it_moved_parent == it3_parent);
+  auto it_moved = std::move(it2);
+  auto &it_moved_parent = it_moved->get()->get_parent().get()->get_object();
+  EXPECT_TRUE(it_moved_parent == it_copy_parent);
+  EXPECT_TRUE(it3_parent == it_copy_parent);
+  EXPECT_TRUE(it_moved_parent == it3_parent);
 
-  //   auto it_moved2(std::move(it_moved));
-  //   auto &it_moved2_parent = it_moved2->get()->get_parent().get()->get_object();
-  //   EXPECT_TRUE(it_moved2_parent == it_copy_parent);
-  //   EXPECT_TRUE(it3_parent == it_copy_parent);
-  //   EXPECT_TRUE(it_moved2_parent == it3_parent);
+  auto it_moved2(std::move(it_moved));
+  auto &it_moved2_parent = it_moved2->get()->get_parent().get()->get_object();
+  EXPECT_TRUE(it_moved2_parent == it_copy_parent);
+  EXPECT_TRUE(it3_parent == it_copy_parent);
+  EXPECT_TRUE(it_moved2_parent == it3_parent);
 }
 
 } // namespace disjoint_set_test

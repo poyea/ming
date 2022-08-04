@@ -22,6 +22,7 @@
 #include <iostream>
 #include <iterator>
 #include <memory>
+#include <utility>
 
 namespace ming {
 
@@ -116,6 +117,11 @@ public:
     Iterator() = default;
     Iterator(pointer ptr) : m_pointer(ptr) {}
     Iterator(value_type val) : m_node(std::move(val)), m_pointer(&m_node) {}
+
+    Iterator(const Iterator &other) : m_node(other.m_node), m_pointer(&m_node) {}
+
+    Iterator(Iterator &&other) noexcept
+        : m_node(std::move(other.m_node)), m_pointer(&m_node) {}
 
     pointer operator->() { return m_pointer; }
 
