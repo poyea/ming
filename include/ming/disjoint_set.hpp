@@ -44,7 +44,7 @@ class DisjointSet {
 
     ~DisjointSetNode() = default;
 
-    DisjointSetNode(const DisjointSetNode &other) {
+    DisjointSetNode(const DisjointSetNode &other) noexcept {
       m_object = std::make_unique<U>(*other.m_object);
       if (other.m_parent != nullptr) {
         m_parent = std::make_shared<node_type>(*other.m_parent);
@@ -112,11 +112,12 @@ public:
     using reference = node_ptr &;
 
   public:
-    Iterator() = default;
-    Iterator(pointer ptr) : m_pointer(ptr) {}
-    Iterator(value_type val) : m_node(std::move(val)), m_pointer(&m_node) {}
+    Iterator() noexcept = default;
+    Iterator(pointer ptr) noexcept : m_pointer(ptr) {}
+    Iterator(value_type val) noexcept : m_node(std::move(val)), m_pointer(&m_node) {}
 
-    Iterator(const Iterator &other) : m_node(other.m_node), m_pointer(&m_node) {}
+    Iterator(const Iterator &other) noexcept
+        : m_node(other.m_node), m_pointer(&m_node) {}
 
     Iterator(Iterator &&other) noexcept
         : m_node(std::move(other.m_node)), m_pointer(&m_node) {}
