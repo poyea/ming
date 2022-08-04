@@ -27,67 +27,65 @@
 namespace ming {
 
 template <typename T>
-class DisjointSet;
+class DisjointSet {
 
-template <typename T>
-class DisjointSetNode {
-  friend DisjointSet<T>;
+  template <typename U>
+  class DisjointSetNode {
+    friend DisjointSet<T>;
 
-  using node_type = DisjointSetNode<T>;
-  using node_ptr = std::shared_ptr<node_type>;
+    using node_type = DisjointSetNode<U>;
+    using node_ptr = std::shared_ptr<node_type>;
 
-  using object_ptr = std::unique_ptr<T>;
+    using object_ptr = std::unique_ptr<U>;
 
-public:
-  DisjointSetNode(object_ptr object, node_ptr parent, int rank)
-      : m_object(std::move(object)), m_parent(std::move(parent)), m_rank(rank) {}
+  public:
+    DisjointSetNode(object_ptr object, node_ptr parent, int rank)
+        : m_object(std::move(object)), m_parent(std::move(parent)), m_rank(rank) {}
 
-  ~DisjointSetNode() = default;
+    ~DisjointSetNode() = default;
 
-  DisjointSetNode(const DisjointSetNode &other) {
-    m_object = std::make_unique<T>(*other.m_object);
-    if (other.m_parent != nullptr) {
-      m_parent = std::make_shared<node_type>(*other.m_parent);
-    } else {
-      m_parent = nullptr;
+    DisjointSetNode(const DisjointSetNode &other) {
+      m_object = std::make_unique<U>(*other.m_object);
+      if (other.m_parent != nullptr) {
+        m_parent = std::make_shared<node_type>(*other.m_parent);
+      } else {
+        m_parent = nullptr;
+      }
+      m_rank = other.m_rank;
     }
-    m_rank = other.m_rank;
-  }
 
-  DisjointSetNode(DisjointSetNode &&other) noexcept
-      : m_object(std::move(other.m_object)),
-        m_parent(std::exchange(other.m_parent, nullptr)), m_rank(other.m_rank) {}
+    DisjointSetNode(DisjointSetNode &&other) noexcept
+        : m_object(std::move(other.m_object)),
+          m_parent(std::exchange(other.m_parent, nullptr)), m_rank(other.m_rank) {}
 
-  DisjointSetNode &operator=(const DisjointSetNode &other) {
-    if (this == &other) {
+    DisjointSetNode &operator=(const DisjointSetNode &other) {
+      if (this == &other) {
+        return *this;
+      }
+      return *this = DisjointSetNode(other);
+    }
+
+    DisjointSetNode &operator=(DisjointSetNode &&other) noexcept {
+      std::swap(m_object, other.m_object);
+      std::swap(m_parent, other.m_parent);
+      std::swap(m_rank, other.m_rank);
       return *this;
     }
-    return *this = DisjointSetNode(other);
-  }
 
-  DisjointSetNode &operator=(DisjointSetNode &&other) noexcept {
-    std::swap(m_object, other.m_object);
-    std::swap(m_parent, other.m_parent);
-    std::swap(m_rank, other.m_rank);
-    return *this;
-  }
+    const T &get_object() const noexcept { return *m_object.get(); }
+    T &get_object() noexcept { return *m_object.get(); }
 
-  const T &get_object() const noexcept { return *m_object.get(); }
-  T &get_object() noexcept { return *m_object.get(); }
+    const node_ptr &get_parent() const { return m_parent; }
+    node_ptr &get_parent() { return m_parent; }
 
-  const node_ptr &get_parent() const { return m_parent; }
-  node_ptr &get_parent() { return m_parent; }
+    std::uint64_t get_rank() const noexcept { return m_rank; }
 
-  std::uint64_t get_rank() const noexcept { return m_rank; }
+  private:
+    object_ptr m_object;
+    node_ptr m_parent;
+    std::uint64_t m_rank;
+  };
 
-private:
-  object_ptr m_object;
-  node_ptr m_parent;
-  std::uint64_t m_rank;
-};
-
-template <typename T>
-class DisjointSet {
 public:
   class Iterator;
 
