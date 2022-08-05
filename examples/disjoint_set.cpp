@@ -22,9 +22,9 @@ int main(void) {
   vec.push_back(it2);
   vec.push_back(it3);
 
-  std::cout << (vec[0])->get()->get_object().data << '\n';
-  std::cout << (vec[1])->get()->get_object().data << '\n';
-  std::cout << (vec[2])->get()->get_object().data << '\n';
+  std::cout << vec[0]->get()->get_object().data << '\n';
+  std::cout << vec[1]->get()->get_object().data << '\n';
+  std::cout << vec[2]->get()->get_object().data << '\n';
 
   dsu.merge(vec[0], vec[1]);
 
@@ -34,7 +34,7 @@ int main(void) {
 
   for (std::size_t s = 0; s < vec.size(); ++s) {
     std::cout << "Parent of element " << (s + 1) << " is "
-              << (dsu.find(vec[s]))->get()->get_object().data << '\n';
+              << dsu.find(vec[s])->get()->get_object().data << '\n';
   }
 
   for (std::size_t s = 0; s < vec.size(); ++s) {
