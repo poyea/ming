@@ -16,11 +16,13 @@
 // along with ming.  If not, see <https://www.gnu.org/licenses/>.
 //
 
-#pragma once
+#ifndef MING_TRIE
+#define MING_TRIE
 
 #include <memory>
 #include <string_view>
 #include <unordered_map>
+#include <utility>
 
 namespace ming {
 
@@ -118,3 +120,5 @@ private:
 };
 
 } // namespace ming
+
+#endif // MING_TRIE

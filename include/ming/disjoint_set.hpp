@@ -16,7 +16,8 @@
 // along with ming.  If not, see <https://www.gnu.org/licenses/>.
 //
 
-#pragma once
+#ifndef MING_DISJOINT_SET
+#define MING_DISJOINT_SET
 
 #include <exception>
 #include <iostream>
@@ -193,3 +194,5 @@ public:
 };
 
 } // namespace ming
+
+#endif // MING_DISJOINT_SET
