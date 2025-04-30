@@ -12,7 +12,7 @@ foreach(file ${TEST_SRC_FILES})
     add_executable(test_${FILE_NAME} ${file})
     target_link_libraries(test_${FILE_NAME} ${PROJECT_NAME} gtest gtest_main)
     add_test(
-        NAME Trie_TEST_${FILE_NAME}
+        NAME TEST_${FILE_NAME}
         COMMAND test_${FILE_NAME}
     )
     add_custom_command(

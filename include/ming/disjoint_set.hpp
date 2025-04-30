@@ -113,7 +113,7 @@ public:
     using reference = node_ptr &;
 
   public:
-    Iterator() noexcept = default;
+    Iterator() noexcept : m_pointer(&m_node) {}
     Iterator(pointer ptr) noexcept : m_pointer(ptr) {}
     Iterator(value_type val) noexcept : m_node(std::move(val)), m_pointer(&m_node) {}
 
@@ -125,7 +125,12 @@ public:
 
     pointer operator->() { return m_pointer; }
 
-    reference operator*() const { return *m_pointer; }
+    reference operator*() const {
+      if (!m_pointer) {
+        throw std::runtime_error("Dereferencing null DisjointSet Iterator");
+      }
+      return *m_pointer;
+    }
 
     Iterator &operator++() { throw std::logic_error("Not Implemented"); }
 
@@ -176,20 +181,31 @@ public:
     return **root_a == **root_b;
   }
 
-  void merge(Iterator node_a, Iterator node_b) {
-    Iterator parent_a = find(node_a), parent_b = find(node_b);
-    Iterator *const root_a = &parent_a, *const root_b = &parent_b;
-    node_ptr *new_root;
-    if ((*root_a)->get()->m_rank >= (*root_b)->get()->m_rank) {
-      new_root = &(**root_a);
-      (*root_b)->get()->m_parent = *new_root;
-      (**new_root).m_rank += ((*root_a)->get()->m_rank == (*root_b)->get()->m_rank);
-    } else {
-      new_root = &(**root_b);
-      (*root_a)->get()->m_parent = *new_root;
+  void merge(Iterator const node_a_iter, Iterator const node_b_iter) {
+    node_ptr node_a = *node_a_iter;
+    node_ptr node_b = *node_b_iter;
+
+    Iterator parent_a_iter = find(node_a_iter);
+    Iterator parent_b_iter = find(node_b_iter);
+    node_ptr root_a = *parent_a_iter;
+    node_ptr root_b = *parent_b_iter;
+
+    if (root_a == root_b) {
+      return;
     }
-    path_compress(*node_a, *new_root);
-    path_compress(*node_b, *new_root);
+
+    node_ptr new_root;
+    if (root_a->m_rank >= root_b->m_rank) {
+      new_root = root_a;
+      root_b->m_parent = new_root;
+      new_root->m_rank += (root_a->m_rank == root_b->m_rank);
+    } else {
+      new_root = root_b;
+      root_a->m_parent = new_root;
+    }
+
+    path_compress(node_a, new_root);
+    path_compress(node_b, new_root);
   }
 };
 
