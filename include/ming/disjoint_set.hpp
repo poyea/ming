@@ -27,9 +27,19 @@
 
 namespace ming {
 
+/**
+ * @brief A disjoint-set data structure (also known as union-find)
+ *
+ * @tparam T The type of elements stored in the set
+ */
 template <typename T>
 class DisjointSet {
 
+  /**
+   * @brief Node class for the disjoint set elements
+   *
+   * @tparam U Type of element stored in the node
+   */
   template <typename U>
   class DisjointSetNode {
     friend DisjointSet<T>;
@@ -40,6 +50,13 @@ class DisjointSet {
     using object_ptr = std::unique_ptr<U>;
 
   public:
+    /**
+     * @brief Construct a new DisjointSetNode
+     *
+     * @param object The object to store
+     * @param parent Pointer to parent node (nullptr for root)
+     * @param rank The rank of the node (for union by rank)
+     */
     DisjointSetNode(object_ptr object, node_ptr parent, int rank)
         : m_object(std::move(object)), m_parent(std::move(parent)), m_rank(rank) {}
 
@@ -95,6 +112,12 @@ public:
 
   using object_ptr = typename DisjointSetNode<T>::object_ptr;
 
+  /**
+   * @brief Compresses the path from node to root for faster future lookups
+   *
+   * @param node The node to compress path for
+   * @param root The root node
+   */
   void path_compress(node_ptr &node, node_ptr root) {
     for (node_ptr tmp = node->m_parent; tmp && tmp != root;) {
       node->m_parent = root;
@@ -104,6 +127,9 @@ public:
   }
 
 public:
+  /**
+   * @brief Iterator for DisjointSet elements
+   */
   class Iterator {
   public:
     using iterator_category = std::forward_iterator_tag;
@@ -154,17 +180,36 @@ public:
   };
 
 public:
+  /**
+   * @brief Construct a new DisjointSet object
+   */
   DisjointSet() = default;
 
+  /**
+   * @brief Destructor
+   */
   ~DisjointSet() = default;
 
+  /**
+   * @brief Insert an element into the disjoint set
+   *
+   * @tparam Args Constructor argument types
+   * @param args Constructor arguments
+   * @return Iterator to the newly inserted element
+   */
   template <typename... Args>
-  [[maybe_unused]] Iterator insert(Args &&... args) {
+  [[maybe_unused]] Iterator insert(Args &&...args) {
     auto new_node = std::make_shared<node_type>(
         std::make_unique<T>(std::forward<Args>(args)...), nullptr, 0);
     return Iterator(std::move(new_node));
   }
 
+  /**
+   * @brief Find the representative (root) of the set containing the given element
+   *
+   * @param object Iterator to the element
+   * @return Iterator to the root element
+   */
   Iterator find(Iterator object) {
     auto object_ptr = *object;
     while (object_ptr->m_parent != nullptr) {
@@ -181,6 +226,12 @@ public:
     return **root_a == **root_b;
   }
 
+  /**
+   * @brief Merge two sets together
+   *
+   * @param node_a_iter Iterator to element in first set
+   * @param node_b_iter Iterator to element in second set
+   */
   void merge(Iterator const node_a_iter, Iterator const node_b_iter) {
     node_ptr node_a = *node_a_iter;
     node_ptr node_b = *node_b_iter;

@@ -72,6 +72,7 @@ TEST_F(DisjointSet_TEST, DisjointSetNode) {
   auto it = dsu.insert(5), it2 = dsu.insert(6), it3 = dsu.insert(7);
 
   dsu.merge(it, it2);
+
   dsu.merge(it, it3);
 
   auto it_copy(it2);
@@ -99,6 +100,40 @@ TEST_F(DisjointSet_TEST, DisjointSetNode) {
   EXPECT_TRUE(it_moved2_parent == it_copy_parent);
   EXPECT_TRUE(it3_parent == it_copy_parent);
   EXPECT_TRUE(it_moved2_parent == it3_parent);
+}
+
+TEST_F(DisjointSet_TEST, ComplexMergeOperations) {
+  std::vector<ming::DisjointSet<int>::Iterator> elements;
+
+  for (int i = 0; i < 10; i++) {
+    elements.push_back(dsu.insert(i));
+  }
+
+  dsu.merge(elements[0], elements[1]);
+  dsu.merge(elements[1], elements[2]);
+  dsu.merge(elements[3], elements[4]);
+  dsu.merge(elements[5], elements[6]);
+  dsu.merge(elements[6], elements[7]);
+
+  EXPECT_TRUE(dsu.are_same_set(elements[0], elements[2]));
+  EXPECT_TRUE(dsu.are_same_set(elements[3], elements[4]));
+  EXPECT_TRUE(dsu.are_same_set(elements[5], elements[7]));
+
+  EXPECT_FALSE(dsu.are_same_set(elements[0], elements[3]));
+  EXPECT_FALSE(dsu.are_same_set(elements[3], elements[5]));
+  EXPECT_FALSE(dsu.are_same_set(elements[0], elements[8]));
+
+  dsu.merge(elements[0], elements[3]);
+  dsu.merge(elements[5], elements[8]);
+
+  dsu.merge(elements[0], elements[5]);
+  dsu.merge(elements[8], elements[9]);
+
+  for (size_t i = 0; i < elements.size(); i++) {
+    for (size_t j = i + 1; j < elements.size(); j++) {
+      EXPECT_TRUE(dsu.are_same_set(elements[i], elements[j]));
+    }
+  }
 }
 
 } // namespace disjoint_set_test
