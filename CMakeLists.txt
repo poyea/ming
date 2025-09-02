@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16..3.23)
+cmake_minimum_required(VERSION 3.20..3.23)
 
 project(ming
     VERSION 0.1.0
@@ -16,7 +16,7 @@ endif()
 add_library(${PROJECT_NAME} INTERFACE)
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
-target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_20)
+target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_23)
 
 target_include_directories(${PROJECT_NAME} INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
