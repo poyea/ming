@@ -6,7 +6,7 @@ C++ containers library
 ```bash
 mkdir -p build
 
-cmake -B build
+cmake -B build -DTESTS=ON
 cmake --build build
 
 ctest --test-dir build
