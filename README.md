@@ -4,12 +4,13 @@ C++ containers library
 ## Build Instructions
 
 ```bash
-mkdir -p build
+mkdir -p build && cmake -B build -DTESTS=ON && cmake --build build && ctest --test-dir build
+```
 
-cmake -B build -DTESTS=ON
-cmake --build build
+Just one:
 
-ctest --test-dir build
+```bash
+mkdir -p build && cmake --build build && ctest --test-dir build -R trie
 ```
 
 ## License
