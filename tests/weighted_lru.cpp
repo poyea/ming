@@ -17,6 +17,7 @@
 //
 
 #include "gtest/gtest.h"
+
 #include <ming/weighted_lru.hpp>
 
 namespace weighted_lru_test {
