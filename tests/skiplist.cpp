@@ -3,6 +3,8 @@
 #include <ming/skiplist.hpp>
 #include <string>
 
+namespace skiplist_test {
+
 void test_basic_operations() {
   ming::SkipList<int, std::string> skiplist;
 
@@ -119,14 +121,15 @@ void test_complex_key() {
   std::cout << "Erased complex key {1, \"one\"}, size now: " << skiplist.size()
             << std::endl;
 }
+} // namespace skiplist_test
 
 int main() {
   std::cout << "Testing basic operations..." << std::endl;
-  test_basic_operations();
+  skiplist_test::test_basic_operations();
   std::cout << "\nTesting custom comparator..." << std::endl;
-  test_custom_comparator();
+  skiplist_test::test_custom_comparator();
   std::cout << "\nTesting complex keys..." << std::endl;
-  test_complex_key();
+  skiplist_test::test_complex_key();
   std::cout << "\nAll tests passed!" << std::endl;
   return 0;
 }
