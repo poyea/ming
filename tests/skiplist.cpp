@@ -1,135 +1,180 @@
-#include <cassert>
-#include <iostream>
+//
+// ming   C++ containers library
+// Copyright (C) 2022-2026 John Law
+//
+// ming is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// ming is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with ming.  If not, see <https://www.gnu.org/licenses/>.
+//
+
+#include "gtest/gtest.h"
+
 #include <ming/skiplist.hpp>
 #include <string>
 
 namespace skiplist_test {
 
-void test_basic_operations() {
-  ming::SkipList<int, std::string> skiplist;
+class SkipList_TEST : public ::testing::Test {
+protected:
+  SkipList_TEST() = default;
+  ~SkipList_TEST() override = default;
 
+  void SetUp() override {
+    // post-construction
+  }
+
+  void TearDown() override {
+    // pre-destruction
+  }
+
+  ming::SkipList<int, std::string> skiplist;
+};
+
+TEST_F(SkipList_TEST, BasicOperations) {
   // Test insert
-  assert(skiplist.insert(5, "five"));
-  assert(skiplist.insert(3, "three"));
-  assert(skiplist.insert(7, "seven"));
+  EXPECT_TRUE(skiplist.insert(5, "five"));
+  EXPECT_TRUE(skiplist.insert(3, "three"));
+  EXPECT_TRUE(skiplist.insert(7, "seven"));
 
   // Test duplicate insert (should fail)
-  assert(!skiplist.insert(5, "five_duplicate"));
+  EXPECT_FALSE(skiplist.insert(5, "five_duplicate"));
 
   // Test size
-  assert(skiplist.size() == 3);
-  std::cout << "Size: " << skiplist.size() << std::endl;
+  EXPECT_EQ(skiplist.size(), 3u);
 
   // Test search
   std::string value;
-  assert(skiplist.search(5, value));
-  assert(value == "five");
-  std::cout << "Found 5: " << value << std::endl;
+  EXPECT_TRUE(skiplist.search(5, value));
+  EXPECT_EQ(value, "five");
 
-  assert(skiplist.search(3, value));
-  assert(value == "three");
-  std::cout << "Found 3: " << value << std::endl;
+  EXPECT_TRUE(skiplist.search(3, value));
+  EXPECT_EQ(value, "three");
 
-  assert(skiplist.search(7, value));
-  assert(value == "seven");
-  std::cout << "Found 7: " << value << std::endl;
+  EXPECT_TRUE(skiplist.search(7, value));
+  EXPECT_EQ(value, "seven");
 
-  assert(!skiplist.search(10, value));
-  std::cout << "Could not find 10" << std::endl;
+  EXPECT_FALSE(skiplist.search(10, value));
 
   // Test contains
-  assert(skiplist.contains(5));
-  assert(!skiplist.contains(10));
+  EXPECT_TRUE(skiplist.contains(5));
+  EXPECT_FALSE(skiplist.contains(10));
 
   // Test erase
-  assert(skiplist.erase(3));
-  assert(skiplist.size() == 2);
-  assert(!skiplist.search(3, value));
-  std::cout << "Erased 3, size now: " << skiplist.size() << std::endl;
+  EXPECT_TRUE(skiplist.erase(3));
+  EXPECT_EQ(skiplist.size(), 2u);
+  EXPECT_FALSE(skiplist.search(3, value));
 
   // Test erase non-existent (should fail)
-  assert(!skiplist.erase(10));
-  std::cout << "Failed to erase non-existent key 10" << std::endl;
+  EXPECT_FALSE(skiplist.erase(10));
 
   // Test iterator
-  std::cout << "Iterating through skiplist:" << std::endl;
   for (auto it = skiplist.begin(); it != skiplist.end(); ++it) {
     auto [key, val] = *it;
-    std::cout << "Key: " << key << ", Value: " << val << std::endl;
+    (void)key;
+    (void)val;
   }
 }
 
-void test_custom_comparator() {
-  auto reverse_comp = [](int a, int b) { return a > b; };
-  ming::SkipList<int, std::string, decltype(reverse_comp)> skiplist(reverse_comp);
+class SkipListReverseComp_TEST : public ::testing::Test {
+protected:
+  SkipListReverseComp_TEST() = default;
+  ~SkipListReverseComp_TEST() override = default;
 
+  void SetUp() override {
+    // post-construction
+  }
+
+  void TearDown() override {
+    // pre-destruction
+  }
+
+  static bool reverse_comp(int a, int b) { return a > b; }
+  ming::SkipList<int, std::string, decltype(&SkipListReverseComp_TEST::reverse_comp)>
+      skiplist{&SkipListReverseComp_TEST::reverse_comp};
+};
+
+TEST_F(SkipListReverseComp_TEST, CustomComparator) {
   // Insert data
-  skiplist.insert(5, "five");
-  skiplist.insert(3, "three");
-  skiplist.insert(7, "seven");
+  EXPECT_TRUE(skiplist.insert(5, "five"));
+  EXPECT_TRUE(skiplist.insert(3, "three"));
+  EXPECT_TRUE(skiplist.insert(7, "seven"));
 
   // Test search with custom comparator
   std::string value;
-  assert(skiplist.search(5, value));
-  assert(value == "five");
-  std::cout << "Custom comparator - Found 5: " << value << std::endl;
+  EXPECT_TRUE(skiplist.search(5, value));
+  EXPECT_EQ(value, "five");
 
-  assert(skiplist.search(3, value));
-  assert(value == "three");
-  std::cout << "Custom comparator - Found 3: " << value << std::endl;
+  EXPECT_TRUE(skiplist.search(3, value));
+  EXPECT_EQ(value, "three");
 
-  assert(skiplist.search(7, value));
-  assert(value == "seven");
-  std::cout << "Custom comparator - Found 7: " << value << std::endl;
+  EXPECT_TRUE(skiplist.search(7, value));
+  EXPECT_EQ(value, "seven");
 
   // Check iterator order (should be descending)
-  std::cout << "Custom comparator - Iterating (should be in descending order):"
-            << std::endl;
+  int prev = 0;
+  bool first = true;
   for (auto it = skiplist.begin(); it != skiplist.end(); ++it) {
     auto [key, val] = *it;
-    std::cout << "Key: " << key << ", Value: " << val << std::endl;
+    (void)val;
+
+    if (!first) {
+      EXPECT_GE(prev, key);
+    } else {
+      first = false;
+    }
+    prev = key;
   }
 }
 
-void test_complex_key() {
-  struct ComplexKey {
-    int id;
-    std::string name;
+struct ComplexKey {
+  int id;
+  std::string name;
 
-    bool operator<(const ComplexKey &other) const { return id < other.id; }
-  };
+  bool operator<(ComplexKey const &other) const { return id < other.id; }
+};
+
+class SkipListComplexKey_TEST : public ::testing::Test {
+protected:
+  SkipListComplexKey_TEST() = default;
+  ~SkipListComplexKey_TEST() override = default;
+
+  void SetUp() override {
+    // post-construction
+  }
+
+  void TearDown() override {
+    // pre-destruction
+  }
 
   ming::SkipList<ComplexKey, std::string> skiplist;
+};
 
+TEST_F(SkipListComplexKey_TEST, ComplexKey) {
   skiplist.insert({1, "one"}, "Value for key 1");
   skiplist.insert({2, "two"}, "Value for key 2");
   skiplist.insert({3, "three"}, "Value for key 3");
 
   // Test search
   std::string value;
-  assert(skiplist.search({2, "two"}, value));
-  assert(value == "Value for key 2");
-  std::cout << "Found complex key {2, \"two\"}: " << value << std::endl;
+  EXPECT_TRUE(skiplist.search({2, "two"}, value));
+  EXPECT_EQ(value, "Value for key 2");
 
   // Test searching for non-existent key
-  assert(!skiplist.search({4, "four"}, value));
-  std::cout << "Could not find complex key {4, \"four\"}" << std::endl;
+  EXPECT_FALSE(skiplist.search({4, "four"}, value));
 
   // Test erase
-  assert(skiplist.erase({1, "one"}));
-  assert(!skiplist.search({1, "one"}, value));
-  std::cout << "Erased complex key {1, \"one\"}, size now: " << skiplist.size()
-            << std::endl;
+  EXPECT_TRUE(skiplist.erase({1, "one"}));
+  EXPECT_FALSE(skiplist.search({1, "one"}, value));
+  EXPECT_EQ(skiplist.size(), 2u);
 }
-} // namespace skiplist_test
 
-int main() {
-  std::cout << "Testing basic operations..." << std::endl;
-  skiplist_test::test_basic_operations();
-  std::cout << "\nTesting custom comparator..." << std::endl;
-  skiplist_test::test_custom_comparator();
-  std::cout << "\nTesting complex keys..." << std::endl;
-  skiplist_test::test_complex_key();
-  std::cout << "\nAll tests passed!" << std::endl;
-  return 0;
-}
+} // namespace skiplist_test
