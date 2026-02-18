@@ -80,26 +80,31 @@ TEST_F(DisjointSet_TEST, DisjointSetNode) {
   EXPECT_TRUE(it2->get()->get_rank() == it_copy->get()->get_rank());
   EXPECT_TRUE(&it2->get()->get_object() == &it_copy->get()->get_object());
   EXPECT_TRUE(&it2->get()->get_parent() == &it_copy->get()->get_parent());
-  EXPECT_TRUE(it->get()->get_parent().get() == nullptr); // root
+  EXPECT_TRUE(it->get()->lock_parent() == nullptr); // root
 
-  auto &it2_parent = it2->get()->get_parent().get()->get_object();
-  auto &it_copy_parent = it_copy->get()->get_parent().get()->get_object();
-  auto &it3_parent = it3->get()->get_parent().get()->get_object();
-  EXPECT_TRUE(it2_parent == it_copy_parent);
-  EXPECT_TRUE(it3_parent == it_copy_parent);
-  EXPECT_TRUE(it2_parent == it3_parent);
+  auto it2_parent_sp = it2->get()->lock_parent();
+  auto it_copy_parent_sp = it_copy->get()->lock_parent();
+  auto it3_parent_sp = it3->get()->lock_parent();
+  ASSERT_TRUE(it2_parent_sp);
+  ASSERT_TRUE(it_copy_parent_sp);
+  ASSERT_TRUE(it3_parent_sp);
+
+  EXPECT_EQ(it2_parent_sp, it_copy_parent_sp);
+  EXPECT_EQ(it3_parent_sp, it_copy_parent_sp);
+
+  EXPECT_EQ(it2_parent_sp->get_object(), it3_parent_sp->get_object());
 
   auto it_moved = std::move(it2);
-  auto &it_moved_parent = it_moved->get()->get_parent().get()->get_object();
-  EXPECT_TRUE(it_moved_parent == it_copy_parent);
-  EXPECT_TRUE(it3_parent == it_copy_parent);
-  EXPECT_TRUE(it_moved_parent == it3_parent);
+  auto &it_moved_parent = it_moved->get()->lock_parent()->get_object();
+  EXPECT_TRUE(it_moved_parent == it_copy_parent_sp->get_object());
+  EXPECT_TRUE(it3_parent_sp == it_copy_parent_sp);
+  EXPECT_TRUE(it_moved_parent == it3_parent_sp->get_object());
 
   auto it_moved2(std::move(it_moved));
-  auto &it_moved2_parent = it_moved2->get()->get_parent().get()->get_object();
-  EXPECT_TRUE(it_moved2_parent == it_copy_parent);
-  EXPECT_TRUE(it3_parent == it_copy_parent);
-  EXPECT_TRUE(it_moved2_parent == it3_parent);
+  auto &it_moved2_parent = it_moved2->get()->lock_parent()->get_object();
+  EXPECT_TRUE(it_moved2_parent == it_copy_parent_sp->get_object());
+  EXPECT_TRUE(it3_parent_sp == it_copy_parent_sp);
+  EXPECT_TRUE(it_moved2_parent == it3_parent_sp->get_object());
 }
 
 TEST_F(DisjointSet_TEST, ComplexMergeOperations) {
@@ -134,6 +139,70 @@ TEST_F(DisjointSet_TEST, ComplexMergeOperations) {
       EXPECT_TRUE(dsu.are_same_set(elements[i], elements[j]));
     }
   }
+}
+
+TEST_F(DisjointSet_TEST, RootParentIsNull) {
+  auto it = dsu.insert(42);
+  EXPECT_EQ(it->get()->lock_parent(), nullptr);
+}
+
+TEST_F(DisjointSet_TEST, CopyConstructorDoesNotDeepCopyParent) {
+  auto a = dsu.insert(100);
+  auto b = dsu.insert(200);
+
+  dsu.merge(a, b);
+
+  auto b_copy = b; // copy handle
+
+  auto root = *dsu.find(a);
+  ASSERT_TRUE(root);
+
+  auto b_parent = b->get()->lock_parent();
+  auto b_copy_parent = b_copy->get()->lock_parent();
+
+  ASSERT_TRUE(b_parent);
+  ASSERT_TRUE(b_copy_parent);
+
+  EXPECT_EQ(b_parent, b_copy_parent);
+  EXPECT_EQ(b_parent, root);
+}
+
+TEST_F(DisjointSet_TEST, MovePreservesParentPointer) {
+  auto a = dsu.insert(300);
+  auto b = dsu.insert(400);
+
+  dsu.merge(a, b);
+
+  auto parent_before = b->get()->lock_parent();
+  ASSERT_TRUE(parent_before);
+
+  auto b_moved = std::move(b);
+  ASSERT_NE(b_moved->get(), nullptr);
+
+  auto parent_after = b_moved->get()->lock_parent();
+  EXPECT_EQ(parent_before, parent_after);
+}
+
+TEST_F(DisjointSet_TEST, FindReturnsRootAndPerformsPathCompression) {
+  auto a = dsu.insert(1);
+  auto b = dsu.insert(2);
+  auto c = dsu.insert(3);
+
+  dsu.merge(a, b);
+  dsu.merge(b, c); // chain: c -> b -> a
+
+  // before compression, c's immediate parent should be b
+  auto c_parent_before = c->get()->lock_parent();
+  ASSERT_TRUE(c_parent_before);
+  EXPECT_EQ(c_parent_before, *dsu.find(b));
+
+  // calling are_same_set triggers path compression
+  EXPECT_TRUE(dsu.are_same_set(c, a));
+
+  auto c_parent_after = c->get()->lock_parent();
+  auto root = *dsu.find(a);
+  ASSERT_TRUE(root);
+  EXPECT_EQ(c_parent_after, root);
 }
 
 } // namespace disjoint_set_test

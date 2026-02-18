@@ -46,6 +46,7 @@ class DisjointSet {
 
     using node_type = DisjointSetNode<U>;
     using node_ptr = std::shared_ptr<node_type>;
+    using weak_node_ptr = std::weak_ptr<node_type>;
 
     using object_ptr = std::unique_ptr<U>;
 
@@ -58,23 +59,24 @@ class DisjointSet {
      * @param rank The rank of the node (for union by rank)
      */
     DisjointSetNode(object_ptr object, node_ptr parent, int rank)
-        : m_object(std::move(object)), m_parent(std::move(parent)), m_rank(rank) {}
+        : m_object(std::move(object)), m_parent(parent), m_rank(rank) {}
 
     ~DisjointSetNode() = default;
 
     DisjointSetNode(DisjointSetNode const &other) noexcept {
       m_object = std::make_unique<U>(*other.m_object);
-      if (other.m_parent != nullptr) {
-        m_parent = std::make_shared<node_type>(*other.m_parent);
+      if (other.lock_parent() != nullptr) {
+        m_parent = other.m_parent;
       } else {
-        m_parent = nullptr;
+        m_parent = std::weak_ptr<node_type>();
       }
       m_rank = other.m_rank;
     }
 
     DisjointSetNode(DisjointSetNode &&other) noexcept
         : m_object(std::move(other.m_object)),
-          m_parent(std::exchange(other.m_parent, nullptr)), m_rank(other.m_rank) {}
+          m_parent(std::exchange(other.m_parent, std::weak_ptr<node_type>())),
+          m_rank(other.m_rank) {}
 
     DisjointSetNode &operator=(DisjointSetNode const &other) {
       if (this == &other) {
@@ -93,14 +95,16 @@ class DisjointSet {
     const T &get_object() const noexcept { return *m_object.get(); }
     T &get_object() noexcept { return *m_object.get(); }
 
-    const node_ptr &get_parent() const { return m_parent; }
-    node_ptr &get_parent() { return m_parent; }
+    const weak_node_ptr &get_parent() const { return m_parent; }
+    weak_node_ptr &get_parent() { return m_parent; }
+
+    node_ptr lock_parent() const { return m_parent.lock(); }
 
     std::uint64_t get_rank() const noexcept { return m_rank; }
 
   private:
     object_ptr m_object;
-    node_ptr m_parent;
+    weak_node_ptr m_parent;
     std::uint64_t m_rank;
   };
 
@@ -119,10 +123,10 @@ public:
    * @param root The root node
    */
   void path_compress(node_ptr &node, node_ptr root) {
-    for (node_ptr tmp = node->m_parent; tmp && tmp != root;) {
+    for (auto tmp = node->lock_parent(); tmp && tmp != root;) {
       node->m_parent = root;
       node = tmp;
-      tmp = node->m_parent;
+      tmp = node->lock_parent();
     }
   }
 
@@ -212,8 +216,8 @@ public:
    */
   Iterator find(Iterator object) {
     auto object_ptr = *object;
-    while (object_ptr->m_parent != nullptr) {
-      object_ptr = object_ptr->m_parent;
+    while (auto parent = object_ptr->lock_parent()) {
+      object_ptr = parent;
     }
     return Iterator(object_ptr);
   }
