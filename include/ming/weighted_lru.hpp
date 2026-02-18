@@ -67,7 +67,7 @@ public:
     }
 
     while (m_current_cap + size > m_capacity) {
-      const auto &last = m_store.back();
+      auto const &last = m_store.back();
       m_cache_positions.erase(last.key);
       m_current_cap -= last.size;
       m_store.pop_back();

@@ -62,7 +62,7 @@ class DisjointSet {
 
     ~DisjointSetNode() = default;
 
-    DisjointSetNode(const DisjointSetNode &other) noexcept {
+    DisjointSetNode(DisjointSetNode const &other) noexcept {
       m_object = std::make_unique<U>(*other.m_object);
       if (other.m_parent != nullptr) {
         m_parent = std::make_shared<node_type>(*other.m_parent);
@@ -76,7 +76,7 @@ class DisjointSet {
         : m_object(std::move(other.m_object)),
           m_parent(std::exchange(other.m_parent, nullptr)), m_rank(other.m_rank) {}
 
-    DisjointSetNode &operator=(const DisjointSetNode &other) {
+    DisjointSetNode &operator=(DisjointSetNode const &other) {
       if (this == &other) {
         return *this;
       }
@@ -143,7 +143,7 @@ public:
     Iterator(pointer ptr) noexcept : m_pointer(ptr) {}
     Iterator(value_type val) noexcept : m_node(std::move(val)), m_pointer(&m_node) {}
 
-    Iterator(const Iterator &other) noexcept
+    Iterator(Iterator const &other) noexcept
         : m_node(other.m_node), m_pointer(&m_node) {}
 
     Iterator(Iterator &&other) noexcept
@@ -166,11 +166,11 @@ public:
       return tmp;
     }
 
-    friend bool operator==(const Iterator &a, const Iterator &b) {
+    friend bool operator==(Iterator const &a, Iterator const &b) {
       return a.m_pointer == b.m_pointer;
     };
 
-    friend bool operator!=(const Iterator &a, const Iterator &b) {
+    friend bool operator!=(Iterator const &a, Iterator const &b) {
       return a.m_pointer != b.m_pointer;
     };
 

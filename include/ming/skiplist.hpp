@@ -53,7 +53,7 @@ private:
     // node safely.
     std::vector<std::shared_ptr<Node>> forward;
 
-    Node(const Key &k, const T &v, int level)
+    Node(Key const &k, T const &v, int level)
         : key(k), value(v), forward(static_cast<size_t>(level)) {}
 
     Node(Key &&k, T &&v, int level)
@@ -88,7 +88,7 @@ private:
    * @param key The target key to compare against
    * @return The last node encountered before the target key
    */
-  Node *m_descend(Node *node, int level, const Key &key) const noexcept {
+  Node *m_descend(Node *node, int level, Key const &key) const noexcept {
     while (level < static_cast<int>(node->forward.size()) && node->forward[level] &&
            m_compare(node->forward[level]->key, key)) {
       node = node->forward[level].get();
@@ -121,7 +121,7 @@ public:
    * @return true If inserted successfully
    * @return false If not inserted (e.g., duplicate key)
    */
-  bool insert(const Key &key, const T &value) {
+  bool insert(Key const &key, T const &value) {
     std::vector<Node *> update(MAX_LEVEL);
     Node *current = m_head.get();
 
@@ -167,7 +167,7 @@ public:
    * @return true If key was found
    * @return false If key was not found
    */
-  [[nodiscard]] bool search(const Key &key, T &value) const {
+  [[nodiscard]] bool search(Key const &key, T &value) const {
     Node *current = m_head.get();
 
     // Search from the highest level downwards
@@ -193,7 +193,7 @@ public:
    * @return true If key exists
    * @return false If key does not exist
    */
-  [[nodiscard]] bool contains(const Key &key) const {
+  [[nodiscard]] bool contains(Key const &key) const {
     T dummy;
     return search(key, dummy);
   }
@@ -205,7 +205,7 @@ public:
    * @return true If key was found and removed
    * @return false If key was not found
    */
-  bool erase(const Key &key) {
+  bool erase(Key const &key) {
     std::vector<Node *> update(MAX_LEVEL);
     Node *current = m_head.get();
 
@@ -282,11 +282,11 @@ public:
       return tmp;
     }
 
-    bool operator==(const iterator &other) const noexcept {
+    bool operator==(iterator const &other) const noexcept {
       return current == other.current;
     }
 
-    bool operator!=(const iterator &other) const noexcept { return !(*this == other); }
+    bool operator!=(iterator const &other) const noexcept { return !(*this == other); }
 
     value_type operator*() const noexcept { return {current->key, current->value}; }
   };
@@ -311,7 +311,7 @@ public:
    * @param key The key to find
    * @return iterator Iterator pointing to the found key or end() if not found
    */
-  [[nodiscard]] iterator find(const Key &key) {
+  [[nodiscard]] iterator find(Key const &key) {
     Node *current = m_head.get();
 
     for (int i = m_level - 1; i >= 0; --i) {
