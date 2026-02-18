@@ -50,18 +50,14 @@ class Trie {
    * @param from_node Source node to clone from
    * @param to_node Destination node to clone to
    */
-  void clone(const std::unique_ptr<TrieNode> &from_node,
+  void clone(std::unique_ptr<TrieNode> const &from_node,
              std::unique_ptr<TrieNode> &to_node) {
+    to_node->end_of_word = from_node->end_of_word;
     for (auto &[c, child_node] : from_node->children) {
-      auto it = to_node->children.find(c);
-      if (it == to_node->children.end()) {
-        to_node->children[c] = std::make_unique<TrieNode>();
-        to_node->end_of_word = child_node->end_of_word;
-        clone(child_node, to_node->children[c]);
-      } else {
-        to_node->end_of_word = child_node->end_of_word;
-        clone(child_node, it->second);
-      }
+      auto &dest_child = to_node->children[c];
+      if (!dest_child)
+        dest_child = std::make_unique<TrieNode>();
+      clone(child_node, dest_child);
     }
   }
 
@@ -93,7 +89,7 @@ public:
    *
    * @param other Trie to copy from
    */
-  Trie(const Trie &other) noexcept : Trie() { clone(other.m_root, m_root); }
+  Trie(Trie const &other) noexcept : Trie() { clone(other.m_root, m_root); }
 
   /**
    * @brief Move constructor
@@ -108,7 +104,7 @@ public:
    * @param other Trie to copy from
    * @return Trie& Reference to this object
    */
-  Trie &operator=(const Trie &other) noexcept {
+  Trie &operator=(Trie const &other) noexcept {
     if (this == &other) {
       return *this;
     }

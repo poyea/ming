@@ -54,6 +54,21 @@ TEST_F(Trie_TEST, TriePrefix) {
   EXPECT_FALSE(trie.starts_with("po"));
 }
 
+TEST_F(Trie_TEST, TrieCloneDeep) {
+  trie.insert("apple");
+  trie.insert("app");
+  trie.insert("bat");
+  ming::Trie t_copy(trie);
+  EXPECT_TRUE(t_copy.is_word("app"));
+  EXPECT_FALSE(t_copy.is_word("ap"));
+  trie.insert("ty");
+  EXPECT_FALSE(t_copy.is_word("ty"));
+  EXPECT_TRUE(trie.starts_with("ap"));
+  EXPECT_FALSE(trie.starts_with("po"));
+  EXPECT_TRUE(t_copy.starts_with("ap"));
+  EXPECT_FALSE(t_copy.starts_with("po"));
+}
+
 TEST_F(Trie_TEST, TrieClone) {
   trie.insert("word");
   auto t_clone = trie;
