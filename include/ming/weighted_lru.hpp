@@ -16,8 +16,8 @@
 // along with ming.  If not, see <https://www.gnu.org/licenses/>.
 //
 
-#ifndef MING_WLRU
-#define MING_WLRU
+#ifndef MING_WEIGHTED_LRU
+#define MING_WEIGHTED_LRU
 
 #include <expected>
 #include <iostream>
@@ -81,4 +81,4 @@ public:
 
 } // namespace ming
 
-#endif // MING_WLRU
+#endif // MING_WEIGHTED_LRU

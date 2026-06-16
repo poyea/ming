@@ -16,8 +16,8 @@
 // along with ming.  If not, see <https://www.gnu.org/licenses/>.
 //
 
-#ifndef MING_SKIPLIST_HPP
-#define MING_SKIPLIST_HPP
+#ifndef MING_SKIPLIST
+#define MING_SKIPLIST
 
 #include <cstddef>
 #include <functional>
@@ -330,4 +330,4 @@ public:
 
 } // namespace ming
 
-#endif // MING_SKIPLIST_HPP
+#endif // MING_SKIPLIST
