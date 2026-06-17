@@ -15,9 +15,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v5
       with:
         submodules: recursive
+
+    - name: Clang Setup
+      uses: actions/checkout@v5
+      run: |
+        wget https://apt.llvm.org/llvm.sh
+        chmod +x llvm.sh
+        sudo ./llvm.sh 22
+        echo "CC=clang-22" >> $GITHUB_ENV
+        echo "CXX=clang++-22" >> $GITHUB_ENV
+
+    - name: Install CMake 4.0.0
+      shell: bash
+      run: |
+        sudo apt remove cmake -y || true
+        sudo pip install cmake --upgrade
+        cmake --version
 
     - name: Create Build Environment
       # Some projects don't allow in-source building, so create a separate build directory
@@ -44,6 +60,6 @@ jobs:
       working-directory: ${{runner.workspace}}/build
       shell: bash
       run: |
-        CXX=clang++ cmake . -DTESTS=ON
+        cmake . -DTESTS=ON
         make
         ctest -C $BUILD_TYPE
