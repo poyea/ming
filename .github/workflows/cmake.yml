@@ -20,7 +20,7 @@ jobs:
         submodules: recursive
 
     - name: Clang Setup
-      uses: actions/checkout@v5
+      shell: bash
       run: |
         wget https://apt.llvm.org/llvm.sh
         chmod +x llvm.sh
