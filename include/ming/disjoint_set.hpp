@@ -19,6 +19,7 @@
 #ifndef MING_DISJOINT_SET
 #define MING_DISJOINT_SET
 
+#include <cstdint>
 #include <exception>
 #include <iostream>
 #include <iterator>
