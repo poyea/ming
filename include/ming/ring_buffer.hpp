@@ -87,7 +87,25 @@ public:
   }
 
   std::size_t capacity() const noexcept { return m_capacity; }
-}
+
+  void resize(std::size_t new_capacity) {
+    if (new_capacity == 0) {
+      throw std::runtime_error("RingBuffer capacity is zero!");
+    }
+
+    std::vector<T> new_buffer(new_capacity);
+    std::size_t new_size = std::min(size(), new_capacity);
+
+    for (std::size_t i = 0; i < new_size; ++i) {
+      new_buffer[i] = m_buffer[(m_tail + i) % m_capacity];
+    }
+
+    m_buffer = std::move(new_buffer);
+    m_capacity = new_capacity;
+    m_head = new_size;
+    m_tail = 0;
+  }
+};
 
 } // namespace ming
 
