@@ -23,6 +23,7 @@
 #include <iostream>
 #include <iterator>
 #include <memory>
+#include <type_traits>
 #include <utility>
 
 namespace ming {
@@ -50,13 +51,13 @@ public:
   RingBuffer &operator=(RingBuffer const &other) = default;
   RingBuffer &operator=(RingBuffer &&other) noexcept = default;
 
-  void push(T const &item) noexcept {
-    m_buffer[m_head] = item;
-    m_head = (m_head + 1) % m_capacity;
-
-    if (m_head == m_tail) {
+  void push(T const &item) noexcept(std::is_nothrow_copy_assignable_v<T>) {
+    if (is_full()) {
       m_tail = (m_tail + 1) % m_capacity;
     }
+
+    m_buffer[m_head] = item;
+    m_head = (m_head + 1) % m_capacity;
   }
 
   T pop() {
@@ -79,6 +80,8 @@ public:
   bool is_full() const noexcept { return (m_head + 1) % m_capacity == m_tail; }
 
   std::size_t size() const noexcept {
+    if (is_full())
+      return m_capacity;
     if (m_head >= m_tail) {
       return m_head - m_tail;
     } else {
