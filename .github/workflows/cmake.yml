@@ -28,7 +28,7 @@ jobs:
         echo "CC=clang-22" >> $GITHUB_ENV
         echo "CXX=clang++-22" >> $GITHUB_ENV
 
-    - name: Install CMake 4.0.0
+    - name: Install CMake
       shell: bash
       run: |
         sudo apt remove cmake -y || true
