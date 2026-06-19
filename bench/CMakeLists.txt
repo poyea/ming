@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 4.3.2)
 
 set(BENCH_SOURCES
     bench_disjoint_set.cpp
