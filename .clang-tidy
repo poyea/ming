@@ -2,3 +2,4 @@ Checks: "-*,\
   readability-braces-around-statements,\
   cppcoreguidelines-init-variables
 "
+HeaderFilterRegex: 'include/.*'
