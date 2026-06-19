@@ -6,6 +6,17 @@ project(ming
     DESCRIPTION "Slightly advanced containers for C++"
     HOMEPAGE_URL "https://github.com/poyea/ming")
 
+if(PROJECT_IS_TOP_LEVEL)
+    find_program(CLANG_TIDY_EXE NAMES "clang-tidy-22")
+    if(CLANG_TIDY_EXE)
+        message(INFO "clang-tidy-22 is detected...")
+        set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE}")
+        set(CMAKE_CXX_CLANG_TIDY_EXPORT_FIXES_DIR "${CMAKE_BINARY_DIR}/__clang-tidy-fixes")
+    else()
+        message(WARNING "clang-tidy not found, continuing without linting.")
+    endif()
+endif()
+
 if(MSVC)
     add_compile_options(/permissive- /W4)
 else()
