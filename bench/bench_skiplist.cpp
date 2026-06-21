@@ -1,3 +1,5 @@
+#define SUPPRESS_UNUSED _Pragma("GCC diagnostic ignored \"-Wunused-variable\"")
+
 #include <chrono>
 #include <iostream>
 #include <random>
@@ -9,10 +11,10 @@
 static std::size_t constexpr const N = 100000;
 
 static void BM_SkipListInsert(benchmark::State &state) {
-  ming::SkipList<size_t, size_t> sl;
+  ming::SkipList<std::size_t, std::size_t> sl;
 
   for (auto _ : state) {
-    for (size_t i = 0; i < N; ++i) {
+    for (auto i = 0uz; i < N; ++i) {
       sl.insert(i, i * 10);
     }
     benchmark::DoNotOptimize(sl);
@@ -22,18 +24,18 @@ static void BM_SkipListInsert(benchmark::State &state) {
 BENCHMARK(BM_SkipListInsert);
 
 static void BM_SkipListSearch(benchmark::State &state) {
-  ming::SkipList<size_t, size_t> sl;
-  for (size_t i = 0; i < N; ++i) {
+  ming::SkipList<std::size_t, std::size_t> sl;
+  for (auto i = 0uz; i < N; ++i) {
     sl.insert(i, i * 10);
   }
 
   std::mt19937_64 gen(123);
-  std::uniform_int_distribution<size_t> dist(0, N - 1);
+  std::uniform_int_distribution<std::size_t> dist(0, N - 1);
 
   for (auto _ : state) {
-    for (size_t i = 0; i < N; ++i) {
-      size_t key = dist(gen);
-      size_t val = 0;
+    for (auto i = 0uz; i < N; ++i) {
+      std::size_t key = dist(gen);
+      std::size_t val = 0;
       auto found = sl.search(key, val);
     }
     benchmark::DoNotOptimize(sl);
@@ -43,13 +45,13 @@ static void BM_SkipListSearch(benchmark::State &state) {
 BENCHMARK(BM_SkipListSearch);
 
 static void BM_SkipListErase(benchmark::State &state) {
-  ming::SkipList<size_t, size_t> sl;
-  for (size_t i = 0; i < N; ++i) {
+  ming::SkipList<std::size_t, std::size_t> sl;
+  for (auto i = 0uz; i < N; ++i) {
     sl.insert(i, i * 10);
   }
 
   for (auto _ : state) {
-    for (size_t i = 0; i < N / 2; ++i) {
+    for (auto i = 0uz; i < N / 2; ++i) {
       sl.erase(i);
     }
     benchmark::DoNotOptimize(sl);
