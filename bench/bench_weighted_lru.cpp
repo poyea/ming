@@ -3,6 +3,7 @@
 #include <random>
 #include <string>
 
+#include <benchmark/benchmark.h>
 #include <ming/weighted_lru.hpp>
 
 using Clock = std::chrono::steady_clock;

@@ -6,8 +6,6 @@
 #include <benchmark/benchmark.h>
 #include <ming/skiplist.hpp>
 
-using Clock = std::chrono::steady_clock;
-
 static std::size_t constexpr const N = 100000;
 
 static void BM_SkipListInsert(benchmark::State &state) {
