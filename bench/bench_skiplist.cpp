@@ -54,6 +54,7 @@ static void BM_SkipListErase(benchmark::State &state) {
     for (auto i = 0uz; i < N / 2; ++i) {
       sl.erase(i);
     }
+
     benchmark::DoNotOptimize(sl);
     benchmark::ClobberMemory();
   }

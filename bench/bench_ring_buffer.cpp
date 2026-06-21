@@ -7,6 +7,7 @@ static void BM_RingBufferPush10(benchmark::State &state) {
 
   for (auto _ : state) {
     rb.push(item);
+
     benchmark::DoNotOptimize(rb);
     benchmark::ClobberMemory();
   }
@@ -19,6 +20,7 @@ static void BM_RingBufferPush1000(benchmark::State &state) {
 
   for (auto _ : state) {
     rb.push(item);
+
     benchmark::DoNotOptimize(rb);
     benchmark::ClobberMemory();
   }
