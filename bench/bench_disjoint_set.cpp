@@ -1,59 +1,98 @@
+//
+// ming   C++ containers library
+// Copyright (C) 2022-2026 John Law
+//
+// ming is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// ming is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with ming.  If not, see <https://www.gnu.org/licenses/>.
+//
+
 #include <chrono>
 #include <iostream>
 #include <random>
 #include <vector>
 
+#include <benchmark/benchmark.h>
 #include <ming/disjoint_set.hpp>
 
-using Clock = std::chrono::steady_clock;
+static std::size_t N = 100000;
 
-int main(int argc, char **argv) {
-  std::size_t N = 100000;
-  if (argc > 1)
-    N = std::stoul(argv[1]);
-
+static void BM_DisjointSetPush(benchmark::State &state) {
   ming::DisjointSet<int> dsu;
   std::vector<ming::DisjointSet<int>::Iterator> nodes;
   nodes.reserve(N);
 
-  auto t0 = Clock::now();
+  for (auto _ : state) {
+    for (std::size_t i = 0; i < N; ++i) {
+      nodes.push_back(dsu.insert(static_cast<int>(i)));
+    };
+
+    benchmark::DoNotOptimize(dsu);
+    benchmark::ClobberMemory();
+  }
+}
+BENCHMARK(BM_DisjointSetPush);
+
+static void BM_DisjointSetMerge(benchmark::State &state) {
+  ming::DisjointSet<int> dsu;
+  std::vector<ming::DisjointSet<int>::Iterator> nodes;
+  nodes.reserve(N);
+
   for (std::size_t i = 0; i < N; ++i) {
     nodes.push_back(dsu.insert(static_cast<int>(i)));
-  }
-  auto t1 = Clock::now();
+  };
 
   std::mt19937_64 gen(42);
   std::uniform_int_distribution<std::size_t> dist(0, N - 1);
 
-  // random merges
-  auto t2 = Clock::now();
-  for (std::size_t i = 0; i < N / 2; ++i) {
-    std::size_t a = dist(gen);
-    std::size_t b = dist(gen);
-    dsu.merge(nodes[a], nodes[b]);
-  }
-  auto t3 = Clock::now();
+  for (auto _ : state) {
+    for (std::size_t i = 0; i < N / 2; ++i) {
+      std::size_t a = dist(gen);
+      std::size_t b = dist(gen);
+      dsu.merge(nodes[a], nodes[b]);
+    }
 
-  // repeated finds
-  std::size_t same_count = 0;
-  auto t4 = Clock::now();
+    benchmark::DoNotOptimize(dsu);
+    benchmark::ClobberMemory();
+  }
+}
+BENCHMARK(BM_DisjointSetMerge);
+
+static void BM_DisjointSetFind(benchmark::State &state) {
+  ming::DisjointSet<int> dsu;
+  std::vector<ming::DisjointSet<int>::Iterator> nodes;
+  nodes.reserve(N);
+
   for (std::size_t i = 0; i < N; ++i) {
-    std::size_t a = dist(gen);
-    std::size_t b = dist(gen);
-    if (dsu.are_same_set(nodes[a], nodes[b]))
-      ++same_count;
-  }
-  auto t5 = Clock::now();
-
-  auto ms = [](auto d) {
-    return std::chrono::duration_cast<std::chrono::milliseconds>(d).count();
+    nodes.push_back(dsu.insert(static_cast<int>(i)));
   };
 
-  std::cout << "DisjointSet N=" << N << "\n";
-  std::cout << " insert: " << ms(t1 - t0) << " ms\n";
-  std::cout << " merge:  " << ms(t3 - t2) << " ms\n";
-  std::cout << " are_same_set checks: " << ms(t5 - t4) << " ms (" << same_count
-            << ")\n";
+  std::mt19937_64 gen(42);
+  std::uniform_int_distribution<std::size_t> dist(0, N - 1);
 
-  return 0;
+  std::size_t same_count = 0;
+
+  for (auto _ : state) {
+    for (std::size_t i = 0; i < N; ++i) {
+      std::size_t a = dist(gen);
+      std::size_t b = dist(gen);
+      if (dsu.are_same_set(nodes[a], nodes[b]))
+        ++same_count;
+    }
+
+    benchmark::DoNotOptimize(dsu);
+    benchmark::ClobberMemory();
+  }
 }
+BENCHMARK(BM_DisjointSetFind);
+
+BENCHMARK_MAIN();
