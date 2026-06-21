@@ -1,8 +1,6 @@
 #define SUPPRESS_UNUSED _Pragma("GCC diagnostic ignored \"-Wunused-but-set-variable\"")
 
 #include <algorithm>
-#include <chrono>
-#include <iostream>
 #include <random>
 #include <string>
 #include <vector>
@@ -42,3 +40,5 @@ static void BM_WeightedLRU(benchmark::State &state) {
   }
 }
 BENCHMARK(BM_WeightedLRU);
+
+BENCHMARK_MAIN();

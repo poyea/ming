@@ -8,7 +8,7 @@
 using Clock = std::chrono::steady_clock;
 
 int main(int argc, char **argv) {
-  size_t N = 100000;
+  std::size_t N = 100000;
   if (argc > 1)
     N = std::stoul(argv[1]);
 
@@ -17,29 +17,29 @@ int main(int argc, char **argv) {
   nodes.reserve(N);
 
   auto t0 = Clock::now();
-  for (size_t i = 0; i < N; ++i) {
+  for (std::size_t i = 0; i < N; ++i) {
     nodes.push_back(dsu.insert(static_cast<int>(i)));
   }
   auto t1 = Clock::now();
 
   std::mt19937_64 gen(42);
-  std::uniform_int_distribution<size_t> dist(0, N - 1);
+  std::uniform_int_distribution<std::size_t> dist(0, N - 1);
 
   // random merges
   auto t2 = Clock::now();
-  for (size_t i = 0; i < N / 2; ++i) {
-    size_t a = dist(gen);
-    size_t b = dist(gen);
+  for (std::size_t i = 0; i < N / 2; ++i) {
+    std::size_t a = dist(gen);
+    std::size_t b = dist(gen);
     dsu.merge(nodes[a], nodes[b]);
   }
   auto t3 = Clock::now();
 
   // repeated finds
-  size_t same_count = 0;
+  std::size_t same_count = 0;
   auto t4 = Clock::now();
-  for (size_t i = 0; i < N; ++i) {
-    size_t a = dist(gen);
-    size_t b = dist(gen);
+  for (std::size_t i = 0; i < N; ++i) {
+    std::size_t a = dist(gen);
+    std::size_t b = dist(gen);
     if (dsu.are_same_set(nodes[a], nodes[b]))
       ++same_count;
   }
