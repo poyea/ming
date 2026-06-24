@@ -48,7 +48,7 @@ class FenwickTree {
 public:
   explicit FenwickTree(std::size_t n) : m_size(n), m_binary_indexed_tree(n + 1) {}
 
-  explicit FenwickTree(const std::vector<T> &init) : FenwickTree(init.size()) {
+  explicit FenwickTree(std::vector<T> const &init) : FenwickTree(init.size()) {
     for (std::size_t i = 0; i < init.size(); ++i) {
       add_unchecked(i, init[i]);
     }
