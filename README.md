@@ -6,6 +6,15 @@ C++ containers library
 
 *Note: Please use a modern `clang`.*
 
+Setting `CC` and `CXX`:
+
+```
+export CC=/usr/bin/clang-22
+export CXX=/usr/bin/clang++-22
+```
+
+Build:
+
 ```bash
 mkdir -p build && cmake -B build -DTESTS=ON && cmake --build build && ctest --test-dir build
 ```
